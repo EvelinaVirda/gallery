@@ -42,6 +42,8 @@ class Welcome extends CI_Controller
 		$config['max_height']           = 2000;
 		$result['message'] = "";
 		$this->load->library('upload', $config, 'foto');
+		$this->foto->initialize($config);
+		$upload_foto = $this->foto->do_upload('uploadImage');
 
 		$config['upload_path']          = './uploads/karyawan/berkas/';
 		$config['allowed_types']        = 'gif|jpg|png';
@@ -50,6 +52,8 @@ class Welcome extends CI_Controller
 		$config['max_height']           = 2000;
 		$result['message'] = "";
 		$this->load->library('upload', $config, 'berkas');
+		$this->berkas->initialize($config);
+		$upload_berkas = $this->berkas->do_upload('uploadBerkas');
 
 		$config['upload_path']          = './uploads/karyawan/ttd/';
 		$config['allowed_types']        = 'gif|jpg|png';
@@ -58,32 +62,50 @@ class Welcome extends CI_Controller
 		$config['max_height']           = 2000;
 		$result['message'] = "";
 		$this->load->library('upload', $config, 'ttd');
+		$this->ttd->initialize($config);
+		$upload_ttd = $this->ttd->do_upload('uploadTtd');
 
-		if (!$this->upload->do_upload('uploadImage')) {
-			$result['message'] = array('error' => $this->upload->display_errors());
+		if ($upload_foto && $upload_berkas && $upload_ttd) {
+
+			$data_foto = $this->foto->data();
+			$gambar = $data_foto['file_name'];
+
+			$data_berkas = $this->berkas->data();
+			$berkas = $data_berkas['file_name'];
+
+			$data_ttd = $this->ttd->data();
+			$ttd = $data_ttd['file_name'];
 		} else {
-			$result = array('upload_data' => $this->upload->data());
-			$gambar = $result['upload_data']['file_name'];
-			$result['message'] = "Berhasil";
-		}
-		if (!$this->upload->do_upload('uploadBerkas')) {
-			$result['message'] = array('error' => $this->upload->display_errors());
-		} else {
-			$result = array('upload_data' => $this->upload->data());
-			$berkas = $result['upload_data']['file_name'];
-			$result['message'] = "Berhasil";
-		}
-		if (!$this->upload->do_upload('uploadTtd')) {
-			$result['message'] = array('error' => $this->upload->display_errors());
-		} else {
-			$result = array('upload_data' => $this->upload->data());
-			$ttd = $result['upload_data']['file_name'];
-			$result['message'] = "Berhasil";
+			$result = $this->foto->display_errors();
+			$result = $this->berkas->display_errors();
+			$result = $this->ttd->display_errors();
 		}
 
-		$this->db->query("INSERT INTO foto values(null, '$gambar')");
-		$this->db->query("INSERT INTO foto values(null, '$berkas')");
-		$this->db->query("INSERT INTO foto values(null, '$ttd')");
+		// if (!$this->upload->do_upload('uploadImage')) {
+		// 	$result['message'] = array('error' => $this->upload->display_errors());
+		// } else {
+		// 	$result = array('upload_data' => $this->upload->data());
+		// 	$gambar = $result['upload_data']['file_name'];
+		// 	$result['message'] = "Berhasil";
+		// }
+		// if (!$this->upload->do_upload('uploadBerkas')) {
+		// 	$result['message'] = array('error' => $this->upload->display_errors());
+		// } else {
+		// 	$result = array('upload_data' => $this->upload->data());
+		// 	$berkas = $result['upload_data']['file_name'];
+		// 	$result['message'] = "Berhasil";
+		// }
+		// if (!$this->upload->do_upload('uploadTtd')) {
+		// 	$result['message'] = array('error' => $this->upload->display_errors());
+		// } else {
+		// 	$result = array('upload_data' => $this->upload->data());
+		// 	$ttd = $result['upload_data']['file_name'];
+		// 	$result['message'] = "Berhasil";
+		// }
+
+		$this->db->query("INSERT INTO foto values(null, 'uploads/karyawan/foto/$gambar')");
+		$this->db->query("INSERT INTO foto values(null, 'uploads/karyawan/berkas/$berkas')");
+		$this->db->query("INSERT INTO foto values(null, 'uploads/karyawan/ttd/$ttd')");
 		echo json_encode($result);
 	}
 }
