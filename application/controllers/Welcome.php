@@ -102,7 +102,7 @@ class Welcome extends CI_Controller
 		// 	$ttd = $result['upload_data']['file_name'];
 		// 	$result['message'] = "Berhasil";
 		// }
-
+		//add line tes
 		$this->db->query("INSERT INTO foto values(null, 'uploads/karyawan/foto/$gambar')");
 		$this->db->query("INSERT INTO foto values(null, 'uploads/karyawan/berkas/$berkas')");
 		$this->db->query("INSERT INTO foto values(null, 'uploads/karyawan/ttd/$ttd')");
